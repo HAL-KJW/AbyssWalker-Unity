@@ -13,6 +13,16 @@ public class InputReader : MonoBehaviour
     /// </summary>
     public Vector2 MoveInput { get; private set; }
 
+    /// <summary>
+    /// 마우스 화면 좌표
+    /// </summary>
+    public Vector2 MousePosition { get; private set; }
+
+    /// <summary>
+    /// 공격(클릭) 입력 여부
+    /// </summary>
+    public bool IsFirePressed { get; private set; }
+
     private PlayerInputActions _inputActions;
 
     private void Awake()
@@ -28,6 +38,8 @@ public class InputReader : MonoBehaviour
         _inputActions.Player.Move.performed += OnMoveInput;
         // Move액션이 취소쉬 OnMoveCanceled 메서드 호출
         _inputActions.Player.Move.canceled += OnMoveCanceled;
+        _inputActions.Player.Fire.performed += OnFireInput;
+        _inputActions.Player.Fire.canceled += OnfireCanceled;
     }
 
     private void OnDisable()
@@ -35,7 +47,25 @@ public class InputReader : MonoBehaviour
         // 메모리 누수 방지
         _inputActions.Player.Move.performed -= OnMoveInput;
         _inputActions.Player.Move.canceled -= OnMoveCanceled;
+        _inputActions.Player.Fire.performed -= OnFireInput;
+        _inputActions.Player.Fire.canceled -= OnfireCanceled;
         _inputActions.Disable();
+    }
+
+    private void Update()
+    {
+        ReadMousePosition();
+    }
+
+    /// <summery>
+    /// 마우스 화면 좌표갱신
+    /// </summery>
+    private void ReadMousePosition()
+    {
+        if(Mouse.current != null)
+        {
+            MousePosition = Mouse.current.position.ReadValue();
+        }
     }
 
     /// <summary>
@@ -55,12 +85,14 @@ public class InputReader : MonoBehaviour
         MoveInput = Vector2.zero;
     }
 
-    //private void ReadMoveInput()
-    //{
-    //    float horizontal = Input.GetAxisRaw("Horizontal");
-    //    float vertical   = Input.GetAxisRaw("Vertical");
+    private void OnFireInput(InputAction.CallbackContext context)
+    {
+        IsFirePressed = true;
+    }
 
-    //    // normalized 대각선 이동시 속도 보정
-    //    MoveInput = new Vector2(horizontal , vertical).normalized;
-    //}
+    private void OnfireCanceled(InputAction.CallbackContext context)
+    {
+        IsFirePressed = false;
+    }
+
 }

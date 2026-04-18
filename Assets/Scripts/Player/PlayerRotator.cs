@@ -2,34 +2,56 @@
 
 /// <summary>
 /// 플레이어 회전을 담당하는 클래스
+/// 마우스가 가리키는 바닥위치를 바라보도록 회전
 /// </summary>
 public class PlayerRotator : MonoBehaviour
 {
     [SerializeField] private float rotationSpeed = 10f;
 
-    /// <summary>
-    /// 이동방향을 바라보도록 회전
-    /// </summary>
-    /// <param name="moveInput">이동 입력값</param>
-    public void Rotate(Vector2 moveInput)
-    {
-        if (!HasMoveInput(moveInput)) return; // 입력없으면 리턴
+    private Camera _mainCamera;
+    private Plane _groundPlane = new Plane(Vector3.up, Vector3.zero);
 
-        Vector3 lookDirection = ConvertToWorldDirection(moveInput);
+    private void Start()
+    {
+        _mainCamera = Camera.main;
+    }
+
+    /// <summary>
+    /// 마우스 화면 좌표를 받아 바닥 기준으로 회전
+    /// </summary>
+    public void RotateTowardsMouse(Vector2 mouseScreenPosition)
+    {
+        Vector3 worldPoint;
+        if (!TryGetMouseWorldPosition(mouseScreenPosition, out worldPoint)) return;
+
+        Vector3 lookDirection = CalculateLookDirection(worldPoint);
+        if (lookDirection.sqrMagnitude < 0.001f) return;
+
         ApplyRotation(lookDirection);
     }
 
     /// <summary>
-    /// 입력있는지 확인
+    /// 화면 좌표를 바닥 평면에 Raycast하여 월드 좌표로 변환
     /// </summary>
-    private bool HasMoveInput(Vector2 input)
+    private bool TryGetMouseWorldPosition(Vector2 screenPosition, out Vector3 worldPosition)
     {
-        return input.sqrMagnitude > 0f;
+        worldPosition = Vector3.zero;
+        Ray ray = _mainCamera.ScreenPointToRay(screenPosition);
+
+        float distance;
+        if (_groundPlane.Raycast(ray, out distance))
+        {
+            worldPosition = ray.GetPoint(distance);
+            return true;
+        }
+        return false;
     }
 
-    private Vector3 ConvertToWorldDirection(Vector2 input)
+    private Vector3 CalculateLookDirection(Vector3 targetWorldPosition)
     {
-        return new Vector3(input.x, 0f, input.y);
+        Vector3 direction = targetWorldPosition - transform.position;
+        direction.y = 0f;
+        return direction;
     }
 
     /// <summary>

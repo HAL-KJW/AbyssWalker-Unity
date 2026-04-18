@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e146f2e33affc2246b19b4473e82df33, type: 3}
+  m_Name: GunData
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: Gun
+  damage: 10
+  fireRate: 0.2
+  bulletSpeed: 20
+  bulletLifetime: 2
+  bulletPrefab: {fileID: 9071248155395416316, guid: 7ab26a8e48cce334d9d4860f5776b0e6, type: 3}
+  bulletCount: 1
+  spreadAngle: 0

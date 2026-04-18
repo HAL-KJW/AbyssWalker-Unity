@@ -36,12 +36,14 @@ public abstract class Weapon : MonoBehaviour
     protected abstract void Fire();
 
     /// <summary>
-    /// 총알 생성 헬퍼
+    /// 풀에서 총알을 꺼내 반환
     /// </summary>
     protected Bullet SpawnBullet(Vector3 position, Quaternion rotation)
     {
-        Bullet bullet = Instantiate(_data.bulletPrefab, position, rotation);
-        bullet.Initialze(_data.damage, _data.bulletSpeed, _data.bulletLifetime);
+        Bullet bullet = BulletPool.Instance.Get();
+        bullet.transform.position = position;
+        bullet.transform.rotation = rotation;
+        bullet.Initialize(_data.damage, _data.bulletSpeed, _data.bulletLifetime);
         return bullet;
     }
 
