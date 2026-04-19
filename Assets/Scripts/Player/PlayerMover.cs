@@ -7,15 +7,18 @@
 /// </summary>
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PlayerStats))]
 public class PlayerMover : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f; // 이동 속도
 
     private Rigidbody _rigidbody;
+    private PlayerStats _playerStats;  
 
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+        _playerStats = GetComponent<PlayerStats>();
         InitializeRigidbody();
     }
 
@@ -66,11 +69,13 @@ public class PlayerMover : MonoBehaviour
     //}
 
     /// <summary>
+    /// RuntimeData에서 이동속도를 가져옴 -> 업그레이드시 자동반영
     /// velocity 방식: AddForce보다 반응성이 좋아 액션 게임에 적합합니다
     /// Y축(중력)은 유지하면서 XZ축만 이동에 사용
     /// </summary>
     private void ApplyMovement(Vector3 direction)
     {
+        float speed = _playerStats.RuntimeData.MoveSpeed; 
         Vector3 velocity = direction * moveSpeed;
         _rigidbody.linearVelocity = new Vector3(velocity.x, _rigidbody.linearVelocity.y, velocity.z);
     }

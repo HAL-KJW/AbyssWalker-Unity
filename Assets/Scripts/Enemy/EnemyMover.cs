@@ -17,7 +17,7 @@ public class EnemyMover : MonoBehaviour
         _rigidbody.freezeRotation = true;
     }
 
-    public void Initalize(float moveSpeed)
+    public void Initialize(float moveSpeed)
     {
         _moveSpeed = moveSpeed;
     }
