@@ -10,6 +10,7 @@ public class Bullet : MonoBehaviour
     private int _damage;
     private float _speed;
     private bool _isPiercing; // 관통 여부
+    private bool _isReleased; // 풀에 반환 여부 체크용 (중복 방지)
     private BulletPool _pool;
 
     private void Awake()
@@ -34,6 +35,7 @@ public class Bullet : MonoBehaviour
         _damage = damage;
         _speed = speed;
         _isPiercing = false; 
+        _isReleased = false;
         ApplyVelocity();
         CancelInvoke(); // 이전 ReturnToPool 호출 취소
         Invoke(nameof(ReturnToPool), lifeTime); // 일정 시간 후 풀로 반환
@@ -59,6 +61,8 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (_isReleased) return; // 이미 풀에 반환된 총알은 무시
+
         TryApplyDamage(other);
 
         if(!_isPiercing)
@@ -67,9 +71,13 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 충돌한 Collider(또는 부모)에서 IDamageable을 찾아 데미지 적용
+    /// 자식 Collider(AttackRange 등)에 충돌해도 부모의 Health에 데미지가 전달되도록 Parent까지 탐색
+    /// </summary>
     private void TryApplyDamage(Collider target)
     {
-        IDamageable damageable = target.GetComponent<IDamageable>();
+        IDamageable damageable = target.GetComponentInParent<IDamageable>();
         if (damageable == null) return;
         
         damageable.TakeDamage(_damage);
@@ -80,6 +88,9 @@ public class Bullet : MonoBehaviour
     /// </summary>
     private void ReturnToPool()
     {
+        if (_isReleased) return; // 중복 반환 방지
+        _isReleased = true;
+
         CancelInvoke(); // 중복 호출 방지
         _rigidbody.linearVelocity = Vector3.zero; // 속도 초기화
 

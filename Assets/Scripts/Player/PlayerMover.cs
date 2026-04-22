@@ -3,22 +3,20 @@
 /// <summary>
 /// 플레이어 이동을 담당하는 클래스
 /// 물리 기반 이동(Rigidbody)
-/// 마우스방향으로 이동이바뀜
+/// 월드 좌표 기준 이동
 /// </summary>
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerMover : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f; // 이동 속도
-
     private Rigidbody _rigidbody;
-    private PlayerStats _playerStats;  
+    private PlayerStats _stats;
 
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _playerStats = GetComponent<PlayerStats>();
+        _stats = GetComponent<PlayerStats>();
         InitializeRigidbody();
     }
 
@@ -37,48 +35,28 @@ public class PlayerMover : MonoBehaviour
     /// <param name="moveInput"> InputReader에서 받은 입력값(정규화된 Vector2)</param>
     public void Move(Vector2 moveInput)
     {
-        Vector3 moveDirection = ConvertToRelativeDirection(moveInput);
+        Vector3 moveDirection = ConvertToWorldDirection(moveInput);
         ApplyMovement(moveDirection);
     }
 
     /// <summary>
-    /// 2D 입력값을 플레이어가 바라보는 방향 기준 3D 월드방향으로 변환
-    /// W(+Y) = 플레이어 forward, S(-Y) = 뒤, A(-X) = 왼쪽, D(+X) = 오른쪽
+    /// 2D 입력값을 월드 좌표 기준 3D 방향으로 변환
+    /// W(+Y) = 월드 +Z, S(-Y) = 월드 -Z, A(-X) = 월드 -X, D(+X) = 월드 +X
+    /// 회전과 무관하게 항상 같은 방향으로 이동 (쿼터뷰 트윈스틱 방식)
     /// </summary>
-    private Vector3 ConvertToRelativeDirection(Vector2 input)
+    private Vector3 ConvertToWorldDirection(Vector2 input)
     {
-        Vector3 forward = transform.forward;
-        Vector3 right = transform.right;
-
-        // Y축 성분 제거하여 수평 이동만 처리
-        forward.y = 0f;
-        right.y = 0f;
-        forward.Normalize();
-        right.Normalize();
-
-        return (forward * input.y + right * input.x).normalized;
+        return new Vector3(input.x, 0f, input.y);
     }
 
-    ///// <summary>
-    ///// 2D 입력값을 3D 월드방향으로 변환
-    ///// 쿼터뷰 게임에서 x축은 좌우, z축은 상하 이동으로 매핑
-    ///// </summary>
-    //private Vector3 ConvertToWorldDirection(Vector2 input)
-    //{
-    //    return new Vector3(input.x, 0f, input.y);
-    //}
-
     /// <summary>
-    /// RuntimeData에서 이동속도를 가져옴 -> 업그레이드시 자동반영
     /// velocity 방식: AddForce보다 반응성이 좋아 액션 게임에 적합합니다
     /// Y축(중력)은 유지하면서 XZ축만 이동에 사용
     /// </summary>
     private void ApplyMovement(Vector3 direction)
     {
-        float speed = _playerStats.RuntimeData.MoveSpeed; 
-        Vector3 velocity = direction * moveSpeed;
+        float speed = _stats.RuntimeData.MoveSpeed;
+        Vector3 velocity = direction * speed;
         _rigidbody.linearVelocity = new Vector3(velocity.x, _rigidbody.linearVelocity.y, velocity.z);
     }
-
-
 }

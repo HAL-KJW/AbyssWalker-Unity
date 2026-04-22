@@ -2,7 +2,7 @@
 
 /// <summary>
 /// 적의 공격을 담당하는 클래스
-/// (현재) 충돌시 플레이어에게 데미지
+/// EnemyAttackTrigger(자식)에서 충돌 정보를 받아 처리
 /// </summary>
 public class EnemyAttack : MonoBehaviour
 {
@@ -13,9 +13,11 @@ public class EnemyAttack : MonoBehaviour
         _attakeDamage = attakeDamage;
     }
 
-    private void OnTriggerEnter(Collider other)
+    /// <summary>
+    /// EnemyAttackTrigger에서 호출됨
+    /// </summary>
+    public void OnAttackTrigger(Collider other)
     {
-        // 플레이어 태그 확인 후 IDamageable로 데미지 전달
         if (!other.CompareTag("Player")) return;
 
         IDamageable damageable = other.GetComponent<IDamageable>();

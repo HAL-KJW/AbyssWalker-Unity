@@ -8,6 +8,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 {
     private int _maxHealth;
     private int _currenHealth;
+    private bool _isDead;
 
     /// <summary>
     /// 사망 시 호출 되는 이벤트
@@ -21,15 +22,19 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     {
         _maxHealth = maxHealth;
         _currenHealth = maxHealth;
+        _isDead = false;
     }
 
     public void TakeDamage(int damage)
     {
+        if (_isDead) return;
+
         _currenHealth -= damage;
 
         if(_currenHealth <= 0)
         {
             _currenHealth = 0;
+            _isDead = true;
             OnDeath?.Invoke();
         }
     }

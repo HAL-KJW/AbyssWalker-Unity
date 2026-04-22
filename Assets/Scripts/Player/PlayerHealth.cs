@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour,IDamageable
     public event Action OnDeath; // 플레이어 사망 이벤트
     public event Action<int, int> OnHealthChanged; //  (현재HP, 최대HP) - UI용
 
-    private void Awkae()
+    private void Awake()
     {
         _playerStats = GetComponent<PlayerStats>();
     }
