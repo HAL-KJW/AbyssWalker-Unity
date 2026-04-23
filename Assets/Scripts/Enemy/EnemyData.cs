@@ -14,6 +14,9 @@ public class EnemyData : ScriptableObject
     public float moveSpeed = 3f;
     public int attackDamage = 1;
 
+    [Header("보상")]
+    public int expReward = 1; 
+
     [Header("AI")]
     public float attackRange = 1.5f;
     public float aiUpdateInterval = 0.2f; // AI 행동 업데이트 간격

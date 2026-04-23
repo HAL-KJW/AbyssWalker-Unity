@@ -20,6 +20,7 @@ public class EnemyController : MonoBehaviour
     private EnemyMover _mover;
     private EnemyAttack _attack;
     private EnemyPool _pool;
+    private ExperienceSystem _expSystem;
 
     private Transform _playerTransform;
     private float _aiTimer;
@@ -46,10 +47,11 @@ public class EnemyController : MonoBehaviour
     /// <summary>
     /// EnemyData 기반 초기화
     /// </summary>
-    public void Initialize(EnemyData data, Transform player)
+    public void Initialize(EnemyData data, Transform player, ExperienceSystem expSystem)
     {
         _enemyData = data;
         _playerTransform = player;
+        _expSystem = expSystem;
         _aiTimer = 0f;
         _isActive = true;
 
@@ -85,6 +87,11 @@ public class EnemyController : MonoBehaviour
     {
         _isActive = false;
         _mover.Stop();
+
+        if (_expSystem != null)
+        {
+            _expSystem.AddExp(_enemyData.expReward);
+        }
 
         // 풀 참조가 있으면 반환, 없으면 비활성화
         if (_pool != null)
