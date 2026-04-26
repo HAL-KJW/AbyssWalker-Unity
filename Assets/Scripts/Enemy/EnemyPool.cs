@@ -21,6 +21,9 @@ public class EnemyPool : MonoBehaviour
     [SerializeField] private int defaultCapacity = 30;
     [SerializeField] private int maxSize = 100;
 
+    [Header("참조")]
+    [SerializeField] private ExperienceSystem _expSystem;
+
     private Transform _playerTransform;
 
     private void Awake()
@@ -44,6 +47,11 @@ public class EnemyPool : MonoBehaviour
         if(player != null)
         {
             _playerTransform = player.transform;
+
+            if (_expSystem == null)
+            {
+                _expSystem = player.GetComponent<ExperienceSystem>();
+            }
         }
     }
 
@@ -54,7 +62,7 @@ public class EnemyPool : MonoBehaviour
     {
         EnemyController enemy = _pool.Get();
         enemy.transform.position = position;
-        enemy.Initialize(_enemyData, _playerTransform);
+        enemy.Initialize(_enemyData, _playerTransform, _expSystem);
         return enemy;
     }
 
